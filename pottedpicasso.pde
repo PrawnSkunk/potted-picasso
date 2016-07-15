@@ -10,7 +10,7 @@ import java.util.Date;
 import processing.serial.*;
 
 // Create object from Serial class
-Serial port; 
+Serial port; // Serial port
 int val_temp; // Data received from the serial port - variable to store the temperature sensor reading
 int val_light; // Data received from the serial port - variable to store the light sensor reading
 int val_moist; // Data received from the serial port - variable to store the moisture sensor reading
