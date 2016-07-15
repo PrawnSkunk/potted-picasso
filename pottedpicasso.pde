@@ -40,6 +40,7 @@ SandPainter[] sands;
 
 void setup()
 {
+  // Application properties
   size(500,500);
   background(255);
   
