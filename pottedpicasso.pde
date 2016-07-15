@@ -60,7 +60,7 @@ void setup()
   // Instantiate serial object
   port = new Serial(this, Serial.list()[0], 9600);
   
-  // Start program
+  // Begin
   begin(); 
 }
 
