@@ -20,7 +20,7 @@ byte[] inBuffer = new byte[255]; //size of the serial buffer to allow for end of
 Twitter twitter;
 StatusUpdate status;
 
-// Constants
+// Constant variables
 int dimx = 500;
 int dimy = 500;
 int num = 0;
