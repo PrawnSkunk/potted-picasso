@@ -12,9 +12,8 @@ import processing.serial.*;
 // Create object from Serial class
 Arduino arduino;
 
-// Twitter objects
-Twitter twitter;
-StatusUpdate status;
+// Create object from TwitterBot class
+TwitterBot twitterBot;
 
 // Constant variables
 int dimx = 500;
@@ -43,18 +42,12 @@ void setup()
   takecolor(dataPath("palette.gif"));
   cgrid = new int[dimx*dimy];
   cracks = new Crack[maxnum];
-
-  // Instantiate twitter object
-  twitter = new TwitterFactory(new ConfigurationBuilder()         
-    .setDebugEnabled(true) 
-    .setOAuthConsumerKey("vEBA9JDv9onXRSIKENRToJuI3") 
-    .setOAuthConsumerSecret("B6Zlj3mkC49eKMQHZ7JECBHAtjBSQQCESJbgQK2uu84geOdRqf") 
-    .setOAuthAccessToken("743475229242986497-ocDQ70FNhJBTSGYJd9pvL6xUjADDUO9") 
-    .setOAuthAccessTokenSecret("i3suZLvqw3SQ7McsubtTsI6hO0dCakcgWlrOtGOERE4zH")
-    .build()).getInstance();
   
   // Instantiate arduino object
   arduino = new Arduino();
+  
+  // Instantiate twitterBot object
+  twitterBot = new TwitterBot();
   
   // Begin
   begin(); 
@@ -74,16 +67,12 @@ void mousePressed() {
   saveFrame(dataPath("image.png"));
   
   // Prepare status
-  status = new StatusUpdate("Test");
-  status.setMedia(new File(dataPath("image.png"))); 
-
-  // Upload status
-  try {
-    twitter.updateStatus(status);
-  } catch (TwitterException te){
-    println("Error: " + te);
-  }
+  twitterBot.prepareStatus();
   
+  // Update status
+  twitterBot.updateStatus();
+  
+  // Restart painter
   begin();
 }
 
