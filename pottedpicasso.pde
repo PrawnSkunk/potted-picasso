@@ -21,7 +21,7 @@ Painter painter;
 void setup()
 {
   // Application properties
-  size(500,500);
+  size(500,500); //change size to 500 whee test comment 
   background(255);
   
   // Instantiate arduino object
