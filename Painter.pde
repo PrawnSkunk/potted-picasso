@@ -5,8 +5,8 @@ class Painter
   public final int WIN_HEIGHT = height;  // Window height
   public int MAX_TOTAL = 25;       // Maximum number of total cracks
   public final int MAX_CRACKS = 16;      // Maximum number of live cracks
-  public final int MAX_PAL = 1024;       // Maximum number of colors
-  public final int MAX_INITIAL = 3;      // Maximum number of initial crack spawns
+  public int MAX_PAL = 1024;       // Maximum number of colors
+  public int MAX_INITIAL = 3;      // Maximum number of initial crack spawns
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -23,10 +23,12 @@ class Painter
   Painter(int maxTotal, int maxPal, int maxInit) 
   {
     // Initialize instance variables
+    MAX_PAL=maxPal;
     this.goodcolor = new color[MAX_PAL];
     MAX_TOTAL = maxTotal;
     this.cgrid = new int[WIN_WIDTH*WIN_HEIGHT];
     this.cracks = new Crack[MAX_CRACKS];
+    MAX_INITIAL = maxInit;
     takecolor(dataPath("swatch.png"));
     restart();
   }

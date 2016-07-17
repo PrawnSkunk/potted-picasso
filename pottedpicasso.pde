@@ -15,6 +15,16 @@ TwitterBot twitterBot;
 Painter painter;
 PFont font;
 
+// variables controlling the max and min values that get passed to the painter method for each sensor reading
+// TEMPORARILY MAKING THEM GLOBAL, THEY WONT BE IN THE FUTURE, THIS IS STILL FOR TESTING
+int light_low = 100;
+int light_high = 1023;
+int temp_low = 10;
+int temp_high = 25;
+int moist_low = 1;
+int moist_high = 10;
+
+// boolean variables to see if sensor has been read from
 boolean sensorsRead = false;
 boolean painterCreated = false;
 
@@ -27,7 +37,9 @@ void setup()
   // Initialize class objects
   arduino = new Arduino();
   twitterBot = new TwitterBot();
-  painter = new Painter(25, 1024, 0); // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
+  // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
+  painter = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+  
 }
 
 void draw() 
@@ -39,24 +51,29 @@ void draw()
   
   // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
   // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
+  
   /*
+  
+  // if the painter has been created then paint away
   if(painterCreated==true){
     if (painter.painting == true) {
       painter.paint();
     } 
   }
-  if(painterCreated==false&&sensorsRead==true){
-    println("painter created with temp="+(int)map(arduino.val_temp, 0, 255, 10, 25)+" light="+(int)map(arduino.val_light, 0, 255, 500, 1023)+" moist="+arduino.val_moist);
-    
-    painter = new Painter((int)map(arduino.val_temp, 0, 255, 10, 25), (int)map(arduino.val_light, 0, 255, 500, 1023), arduino.val_moist);
+  
+  if(painterCreated==false&&sensorsRead==true){ // if there isnt already a painter, create one
+    println("painter created with temp="+(int)map(arduino.val_temp, 0, 255, temp_low, temp_high)+" light="+(int)map(arduino.val_light, 0, 255, light_low, light_high)+" moist="+(int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
+    painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
     painterCreated=true;
   }
+  
   if (sensorsRead == false){
     arduino.initReadings();
-    if(arduino.val_light>0){
+    if(arduino.val_light>0&&arduino.val_temp>0&&arduino.val_moist>0){ // if the sensors have received values then we can begin to init the painter object
       sensorsRead=true;
     }
-  }*/
+  }
+  */
 }
 
 void mousePressed() 
