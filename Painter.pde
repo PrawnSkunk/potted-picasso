@@ -3,8 +3,8 @@ class Painter
   // Constant variables
   public final int WIN_WIDTH = width;    // Window width
   public final int WIN_HEIGHT = height;  // Window height
-  public final int MAX_CRACKS = 200;     // Maximum number of cracks
-  public final int MAX_PAL = 512;        // Maximum number of colors
+  public final int MAX_CRACKS = 16;     // Maximum number of cracks
+  public final int MAX_PAL = 1024;        // Maximum number of colors
 
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -21,7 +21,7 @@ class Painter
     this.goodcolor = new color[MAX_PAL];
     this.cgrid = new int[WIN_WIDTH*WIN_HEIGHT];
     this.cracks = new Crack[MAX_CRACKS];
-    takecolor(dataPath("palette.gif"));
+    takecolor(dataPath("swatch.png"));
     restart();
   }
 
