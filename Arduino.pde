@@ -7,7 +7,7 @@ class Arduino
   byte[] inBuffer = new byte[255]; //size of the serial buffer to allow for end of data characters
 
   Arduino() {
-    // Instantiate serial object
+    // Open the port that the board is connected to and use the same speed (9600 bps)
     port = new Serial(pottedpicasso.this, Serial.list()[0], 9600);
   }
 

@@ -1,21 +1,23 @@
 class Painter 
 {
   // Constant variables
-  public final int WIN_WIDTH = width;       // Window width
-  public final int WIN_HEIGHT = height;     // Window height
-  public final int MAX_TOTAL = 25;           // Maximum number of total cracks
-  public final int MAX_CRACKS = 16;         // Maximum number of live cracks
-  public final int MAX_PAL = 1024;          // Maximum number of colors
+  public final int WIN_WIDTH = width;    // Window width
+  public final int WIN_HEIGHT = height;  // Window height
+  public final int MAX_TOTAL = 25;       // Maximum number of total cracks
+  public final int MAX_CRACKS = 16;      // Maximum number of live cracks
+  public final int MAX_PAL = 1024;       // Maximum number of colors
   public final int MAX_INITIAL = 3;      // Maximum number of initial crack spawns
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
   public Crack[] cracks;      // Contains crack strokes
-  public int[] cgrid;         // Crack grid
   public color[] goodcolor;   // Color grid
+  public int[] cgrid;         // Crack grid
   public int totalCracks;     // Number of total cracks
   public int numCracks;       // Number of live cracks
   public int numPal;          // Number of colors
+  public boolean painting;    // When false, cracks cannot move
+  public boolean cracking;    // When false, cracks cannot split
 
   // Constructor
   Painter() 
@@ -28,7 +30,7 @@ class Painter
     restart();
   }
 
-  public void move()
+  public void paint()
   {
     boolean drawing = false;
     for (int n=0; n<numCracks; n++) {

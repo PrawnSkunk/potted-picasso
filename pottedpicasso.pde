@@ -13,10 +13,7 @@ import processing.serial.*;
 Arduino arduino;
 TwitterBot twitterBot;
 Painter painter;
-
-// Global control variables
-boolean painting = true;  // When false, cracks cannot move
-boolean cracking = true;  // When false, cracks cannot split
+PFont font;
 
 void setup()
 {
@@ -32,14 +29,26 @@ void setup()
 
 void draw() 
 {
-  if (painting) {
-    painter.move();
-  }
+  // Draw paint strokes
+  if (painter.painting == true) {
+    painter.paint();
+  } 
+  // Draw sensor values
+  readSensors();
 }
 
 void mousePressed() 
 {
   tweet();
+}
+
+void readSensors()
+{
+  arduino.initReadings();
+  fill(0);
+  text("temp: "+arduino.val_temp,10,20);
+  text("light: "+arduino.val_light,10,40);
+  text("moisture: "+arduino.val_moist,10,60);
 }
 
 void tweet()
