@@ -1,17 +1,19 @@
 class Painter 
 {
   // Constant variables
-  public final int WIN_WIDTH = width;    // Window width
-  public final int WIN_HEIGHT = height;  // Window height
-  public final int MAX_CRACKS = 16;     // Maximum number of cracks
-  public final int MAX_PAL = 1024;        // Maximum number of colors
-
+  public final int WIN_WIDTH = width;       // Window width
+  public final int WIN_HEIGHT = height;     // Window height
+  public final int MAX_TOTAL = 25;           // Maximum number of total cracks
+  public final int MAX_CRACKS = 16;         // Maximum number of live cracks
+  public final int MAX_PAL = 1024;          // Maximum number of colors
+  
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
   public Crack[] cracks;      // Contains crack strokes
   public int[] cgrid;         // Crack grid
   public color[] goodcolor;   // Color grid
-  public int numCracks;       // Number of cracks
+  public int totalCracks;     // Number of total cracks
+  public int numCracks;       // Number of live cracks
   public int numPal;          // Number of colors
 
   // Constructor
@@ -27,15 +29,26 @@ class Painter
 
   public void move()
   {
-    for (int n=0; n<numCracks; n++) 
-      cracks[n].move();
+    boolean drawing = false;
+    for (int n=0; n<numCracks; n++) {
+      if(cracks[n].moving == true) {
+        cracks[n].move();
+        drawing = true;
+      }
+    }
+    if (!drawing){
+      painting = false;
+    }
   }
 
   // Make a new crack instance
   public void makeCrack() 
   {
-    if (numCracks<MAX_CRACKS) 
+    if (totalCracks++ < MAX_TOTAL) {
+      if (numCracks<MAX_CRACKS) {
       cracks[numCracks++] = new Crack();
+      }
+    } else cracking = false;
   }
 
   // Setup painter
@@ -50,7 +63,7 @@ class Painter
     for (int k=0; k<16; k++) 
     {
       int i = int(random(WIN_WIDTH*WIN_HEIGHT-1));
-      cgrid[i]=int(random(360));
+      cgrid[i] = int(random(360));
     }
 
     // Make just three cracks
@@ -63,32 +76,34 @@ class Painter
 
   // COLOR METHODS ----------------------------------------------------------------
 
-  color somecolor() {
+  color somecolor() 
+  {
     // pick some random good color
     return goodcolor[int(random(numPal))];
   }
 
-  void takecolor(String fn) {
-    PImage b;
-    b = loadImage(fn);
+  void takecolor(String fn) 
+  {
+    PImage b = loadImage(fn);
     image(b, 0, 0);
 
-    for (int x=0; x<b.width; x++) {
-      for (int y=0; y<b.height; y++) {
-        color c = get(x, y);
+    for (int i = 0; i < b.width; i++) 
+    {
+      for (int j = 0; j < b.height; j++) 
+      {
+        color c = get(i, j);
         boolean exists = false;
-        for (int n=0; n<numPal; n++) {
-          if (c==goodcolor[n]) {
+        for (int n = 0; n < numPal; n++) 
+        {
+          if (c == goodcolor[n]) 
+          {
             exists = true;
             break;
           }
         }
-        if (!exists) {
-          // add color to pal
-          if (numPal<MAX_PAL) {
-            goodcolor[numPal] = c;
-            numPal++;
-          }
+        if (!exists && numPal<MAX_PAL) {
+          // add color to palette
+          goodcolor[numPal++] = c;
         }
       }
     }
@@ -99,6 +114,7 @@ class Painter
   class Crack {
     float x, y;
     float t;    // direction of travel in degrees
+    boolean moving = true;
 
     // sand painter
     SandPainter sp;
@@ -140,11 +156,11 @@ class Painter
     }
 
     void startCrack(int X, int Y, int T) {
-      x=X;
-      y=Y;
-      t=T;//%360;
-      x+=0.61*cos(t*PI/180);
-      y+=0.61*sin(t*PI/180);
+        x=X;
+        y=Y;
+        t=T;//%360;
+        x+=0.61*cos(t*PI/180);
+        y+=0.61*sin(t*PI/180);
     }
 
     void move() {
@@ -172,13 +188,20 @@ class Painter
           cgrid[cy*WIN_WIDTH+cx]=int(t);
         } else if (abs(cgrid[cy*WIN_WIDTH+cx]-t)>2) {
           // crack encountered (not self), stop cracking
-          findStart();
-          makeCrack();
+          newCrack();
         }
       } else {
         // out of bounds, stop cracking
+        newCrack();
+      }
+    }
+    
+    void newCrack(){
+      if (cracking == true) {
         findStart();
         makeCrack();
+      } else {
+        moving = false;
       }
     }
 

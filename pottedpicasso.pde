@@ -14,8 +14,13 @@ Arduino arduino;
 TwitterBot twitterBot;
 Painter painter;
 
+// Global control variables
+boolean painting = true;  // When false, cracks cannot move
+boolean cracking = true;  // When false, cracks cannot split
+
 void setup()
 {
+  frameRate(200);
   size(500, 500);
   background(255);
 
@@ -27,7 +32,9 @@ void setup()
 
 void draw() 
 {
-  painter.move();
+  if (painting) {
+    painter.move();
+  }
 }
 
 void mousePressed() 
