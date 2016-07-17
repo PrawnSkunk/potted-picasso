@@ -9,51 +9,44 @@ import twitter4j.util.function.*;
 import java.util.Date;
 import processing.serial.*;
 
-// Create object from Serial class
+// Declare class objects
 Arduino arduino;
-
-// Create object from TwitterBot class
 TwitterBot twitterBot;
-
-// Create object from Painter class
 Painter painter;
 
 void setup()
 {
-  // Application properties
-  size(500,500); //change size to 500 whee test comment 
+  size(500, 500);
   background(255);
-  
-  // Instantiate arduino object
+  smooth();
+
+  // Initialize class objects
   arduino = new Arduino();
-  
-  // Instantiate twitterBot object
   twitterBot = new TwitterBot();
-  
-  // Instantiate painter object
   painter = new Painter();
-  
-  // Begin painter
-  painter.begin(); 
 }
 
 void draw() 
 {
-  // Paint
-  painter.paint();
+  painter.move();
 }
 
 void mousePressed() 
 {
-  // Capture frame
-  saveFrame(dataPath("image.png"));
+  tweet();
+}
+
+void tweet()
+{
+    // Capture frame
+    saveFrame(dataPath("image.png"));
   
-  // Prepare status
-  twitterBot.prepareStatus();
+    // Prepare status
+    twitterBot.prepareStatus();
   
-  // Update status
-  twitterBot.updateStatus();
+    // Update status
+    twitterBot.updateStatus();
   
-  // Restart painter
-  painter.begin();
+    // Restart painter
+    painter.restart();
 }

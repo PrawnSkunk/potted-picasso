@@ -1,10 +1,12 @@
 class TwitterBot {
- 
-  // Twitter objects
+
+  // Instance variables
   Twitter twitter;
   StatusUpdate status;
 
-  TwitterBot(){
+  // TwitterBot constructor
+  TwitterBot() 
+  {
     // Instantiate twitter object
     twitter = new TwitterFactory(new ConfigurationBuilder()         
       .setDebugEnabled(true) 
@@ -16,16 +18,21 @@ class TwitterBot {
   }
   
   // Prepare status
-  void prepareStatus(){
+  void prepareStatus() 
+  {
     status = new StatusUpdate("Test");
-    status.setMedia(new File(dataPath("image.png"))); 
+    status.setMedia(new File(dataPath("image.png")));
   }
-  
+
   // Update status
-  void updateStatus() { 
-    try {
+  void updateStatus() 
+  { 
+    try 
+    {
       twitter.updateStatus(status);
-    } catch (TwitterException te){
+    } 
+    catch (TwitterException te) 
+    {
       println("Error: " + te);
     }
   }
