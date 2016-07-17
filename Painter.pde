@@ -6,6 +6,7 @@ class Painter
   public final int MAX_TOTAL = 25;           // Maximum number of total cracks
   public final int MAX_CRACKS = 16;         // Maximum number of live cracks
   public final int MAX_PAL = 1024;          // Maximum number of colors
+  public final int MAX_INITIAL = 3;      // Maximum number of initial crack spawns
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -54,6 +55,12 @@ class Painter
   // Setup painter
   public void restart() 
   {
+    // Reset global variables
+    painting = true;
+    cracking = true;
+    numCracks = 0;
+    totalCracks = 0;
+    
     // Erase crack grid
     for (int y=0; y<WIN_HEIGHT; y++) 
       for (int x=0; x<WIN_WIDTH; x++) 
@@ -68,7 +75,7 @@ class Painter
 
     // Make just three cracks
     numCracks=0;
-    for (int k=0; k<3; k++) {
+    for (int k=0; k<MAX_INITIAL; k++) {
       makeCrack();
     }
     background(255);
