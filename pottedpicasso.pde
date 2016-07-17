@@ -15,6 +15,9 @@ TwitterBot twitterBot;
 Painter painter;
 PFont font;
 
+boolean sensorsRead = false;
+boolean painterCreated = false;
+
 void setup()
 {
   frameRate(200);
@@ -24,31 +27,41 @@ void setup()
   // Initialize class objects
   arduino = new Arduino();
   twitterBot = new TwitterBot();
-  painter = new Painter();
+  painter = new Painter(25, 1024, 0); // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
 }
 
 void draw() 
 {
-  // Draw paint strokes
+  
   if (painter.painting == true) {
-    painter.paint();
+      painter.paint();
   } 
-  // Draw sensor values
-  readSensors();
+  
+  // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
+  // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
+  /*
+  if(painterCreated==true){
+    if (painter.painting == true) {
+      painter.paint();
+    } 
+  }
+  if(painterCreated==false&&sensorsRead==true){
+    println("painter created with temp="+(int)map(arduino.val_temp, 0, 255, 10, 25)+" light="+(int)map(arduino.val_light, 0, 255, 500, 1023)+" moist="+arduino.val_moist);
+    
+    painter = new Painter((int)map(arduino.val_temp, 0, 255, 10, 25), (int)map(arduino.val_light, 0, 255, 500, 1023), arduino.val_moist);
+    painterCreated=true;
+  }
+  if (sensorsRead == false){
+    arduino.initReadings();
+    if(arduino.val_light>0){
+      sensorsRead=true;
+    }
+  }*/
 }
 
 void mousePressed() 
 {
   tweet();
-}
-
-void readSensors()
-{
-  arduino.initReadings();
-  fill(0);
-  text("temp: "+arduino.val_temp,10,20);
-  text("light: "+arduino.val_light,10,40);
-  text("moisture: "+arduino.val_moist,10,60);
 }
 
 void tweet()

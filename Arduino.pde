@@ -8,7 +8,8 @@ class Arduino
 
   Arduino() {
     // Open the port that the board is connected to and use the same speed (9600 bps)
-    port = new Serial(pottedpicasso.this, Serial.list()[0], 9600);
+    port = new Serial(pottedpicasso.this, Serial.list()[1], 9600);
+    printArray(Serial.list());
   }
 
   int splitVal(String masterString, String breakPoint) {
