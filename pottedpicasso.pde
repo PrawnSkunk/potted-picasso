@@ -33,7 +33,8 @@ int globalTimer = 0;
 
 void setup()
 {
-  frameRate(200);
+  smooth();
+  frameRate(440);
   size(500, 500);
   background(255);
   

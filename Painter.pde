@@ -3,10 +3,15 @@ class Painter
   // Constant variables
   public final int WIN_WIDTH = width;    // Window width
   public final int WIN_HEIGHT = height;  // Window height
-  public int MAX_TOTAL = 100;             // Maximum number of total cracks
-  public final int MAX_CRACKS = 12;      // Maximum number of live cracks
-  public int MAX_PAL = 100;             // Maximum number of colors
-  public int MAX_INITIAL = 5;          // Maximum number of initial crack spawns
+  
+  public int MAX_TOTAL = 160;            // Maximum number of total cracks
+  public final int MAX_CRACKS = 8;      // Maximum number of live cracks
+  public int MAX_PAL = 100;              // Maximum number of colors
+  public int MAX_INITIAL = 6;            // Maximum number of initial crack spawns
+        
+  public float strokeWidth = 11.5;         // Stroke height
+  public int strokeWeight = 7;           // Stroke weight
+  public int strokeOpacity = 225;        // Stroke opacity
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -19,9 +24,11 @@ class Painter
   public boolean painting;    // When false, cracks cannot move
   public boolean cracking;    // When false, cracks cannot split
   
+      
   // Constructor
   Painter(int maxTotal, int light_val, int maxInit) 
   {
+
     // Initialize instance variables
     //MAX_PAL=maxPal;
     this.goodcolor = new color[MAX_PAL];
@@ -83,7 +90,7 @@ class Painter
     for (int k=0; k<MAX_INITIAL; k++) {
       makeCrack();
     }
-    background(255);
+    background(somecolor());
   }
 
   // COLOR METHODS ----------------------------------------------------------------
@@ -151,14 +158,14 @@ class Painter
           found=true;
         }
       }
-
+      int angle = (int)random(90-35,90+35);
       if (found) {
         // start crack
         int a = cgrid[py*WIN_WIDTH+px];
         if (random(100)<50) {
-          a-=90+int(random(-2, 2.1));
+          a-=angle+int(random(-2, 2.1));
         } else {
-          a+=90+int(random(-2, 2.1));
+          a+=angle+int(random(-2, 2.1));
         }
         startCrack(px, py, a);
       } else {
@@ -188,7 +195,8 @@ class Painter
       regionColor();
 
       // draw black crack
-      stroke(0, 85);
+      strokeWeight(5);
+      stroke(0,0);
       point(x+random(-z, z), y+random(-z, z));
 
 
@@ -256,21 +264,24 @@ class Painter
       g = random(0.01, 0.1);
     }
     void render(float x, float y, float ox, float oy) {
+      
+   
       // modulate gain
-      g+=random(-0.050, 0.050);
+      g+=random(strokeWidth);
       float maxg = 1.0;
       if (g<0) g=0;
       if (g>maxg) g=maxg;
 
       // calculate grains by distance
-      //int grains = int(sqrt((ox-x)*(ox-x)+(oy-y)*(oy-y)));
-      int grains = 64;
+      int grains = int(sqrt((ox-x)*(ox-x)+(oy-y)*(oy-y)));
+     // int grains = strokeGrains;
 
       // lay down grains of sand (transparent pixels)
       float w = g/(grains-1);
       for (int i=0; i<grains; i++) {
-        float a = 0.1-i/(grains*10.0);
-        stroke(red(c), green(c), blue(c), a*256);
+        float a = 0.1-i/(grains*10.0);    
+        strokeWeight(strokeWeight);
+        stroke(red(c), green(c), blue(c), a*strokeOpacity);
         point(ox+(x-ox)*sin(sin(i*w)), oy+(y-oy)*sin(sin(i*w)));
       }
     }
