@@ -3,10 +3,10 @@ class Painter
   // Constant variables
   public final int WIN_WIDTH = width;    // Window width
   public final int WIN_HEIGHT = height;  // Window height
-  public int MAX_TOTAL = 250;       // Maximum number of total cracks
-  public final int MAX_CRACKS = 100;      // Maximum number of live cracks
-  public int MAX_PAL = 1024;       // Maximum number of colors
-  public int MAX_INITIAL = 30;      // Maximum number of initial crack spawns
+  public int MAX_TOTAL = 100;             // Maximum number of total cracks
+  public final int MAX_CRACKS = 12;      // Maximum number of live cracks
+  public int MAX_PAL = 100;             // Maximum number of colors
+  public int MAX_INITIAL = 5;          // Maximum number of initial crack spawns
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -18,17 +18,17 @@ class Painter
   public int numPal;          // Number of colors
   public boolean painting;    // When false, cracks cannot move
   public boolean cracking;    // When false, cracks cannot split
-
+  
   // Constructor
-  Painter(int maxTotal, int maxPal, int maxInit) 
+  Painter(int maxTotal, int light_val, int maxInit) 
   {
     // Initialize instance variables
-    MAX_PAL=maxPal;
+    //MAX_PAL=maxPal;
     this.goodcolor = new color[MAX_PAL];
-    MAX_TOTAL = maxTotal;
+    //MAX_TOTAL = maxTotal;
     this.cgrid = new int[WIN_WIDTH*WIN_HEIGHT];
     this.cracks = new Crack[MAX_CRACKS];
-    MAX_INITIAL = maxInit;
+    //MAX_INITIAL = maxInit;
     takecolor(dataPath("swatch.png"));
     restart();
   }
@@ -98,13 +98,12 @@ class Painter
   {
     PImage b = loadImage(fn);
     image(b, 0, 0);
-
-    for (int i = 0; i < b.width; i++) 
+    
+    for (int i = palXPos; i <= palXPos+100 && i <= light_high; i++) 
     {
-      for (int j = 0; j < b.height; j++) 
-      {
-        color c = get(i, j);
+        color c = get(i, 0);
         boolean exists = false;
+
         for (int n = 0; n < numPal; n++) 
         {
           if (c == goodcolor[n]) 
@@ -115,8 +114,8 @@ class Painter
         }
         if (!exists && numPal<MAX_PAL) {
           // add color to palette
-          goodcolor[numPal++] = c;
-        }
+          goodcolor[numPal] = c;
+          numPal++;
       }
     }
   }

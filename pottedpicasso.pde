@@ -17,8 +17,8 @@ PFont font;
 
 // variables controlling the max and min values that get passed to the painter method for each sensor reading
 // TEMPORARILY MAKING THEM GLOBAL, THEY WONT BE IN THE FUTURE, THIS IS STILL FOR TESTING
-int light_low = 100;
-int light_high = 1023;
+int light_low = 0;
+int light_high = 500;
 int temp_low = 10;
 int temp_high = 250;
 int moist_low = 1;
@@ -27,6 +27,7 @@ int moist_high = 50;
 // boolean variables to see if sensor has been read from
 boolean sensorsRead = false;
 boolean painterCreated = false;
+int palXPos;
 
 int globalTimer = 0;
 
@@ -35,13 +36,17 @@ void setup()
   frameRate(200);
   size(500, 500);
   background(255);
-
+  
+  // temporary
+  palXPos = (int)random(light_low,light_high);
+  
   // Initialize class objects
   arduino = new Arduino();
   twitterBot = new TwitterBot();
   // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
   painter = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
   
+
 }
 
 void draw() 
