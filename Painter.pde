@@ -3,10 +3,10 @@ class Painter
   // Constant variables
   public final int WIN_WIDTH = width;    // Window width
   public final int WIN_HEIGHT = height;  // Window height
-  public int MAX_TOTAL = 25;       // Maximum number of total cracks
-  public final int MAX_CRACKS = 16;      // Maximum number of live cracks
+  public int MAX_TOTAL = 250;       // Maximum number of total cracks
+  public final int MAX_CRACKS = 100;      // Maximum number of live cracks
   public int MAX_PAL = 1024;       // Maximum number of colors
-  public int MAX_INITIAL = 3;      // Maximum number of initial crack spawns
+  public int MAX_INITIAL = 30;      // Maximum number of initial crack spawns
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes

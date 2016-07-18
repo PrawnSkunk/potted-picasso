@@ -20,7 +20,7 @@ PFont font;
 int light_low = 100;
 int light_high = 1023;
 int temp_low = 10;
-int temp_high = 50;
+int temp_high = 250;
 int moist_low = 1;
 int moist_high = 50;
 
@@ -75,7 +75,7 @@ void draw()
     if(arduino.val_light>0&&arduino.val_temp>0&&arduino.val_moist>0){ // if the sensors have received values then we can begin to init the painter object
       sensorsRead=true;
     }
-  }*/
+  }
   
   // once this timer reaches 3000 (not based on actual seconds or milliseconds) it will post to twitter
   // and then start drawing again
