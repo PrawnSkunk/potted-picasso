@@ -20,13 +20,15 @@ PFont font;
 int light_low = 100;
 int light_high = 1023;
 int temp_low = 10;
-int temp_high = 25;
+int temp_high = 50;
 int moist_low = 1;
-int moist_high = 10;
+int moist_high = 50;
 
 // boolean variables to see if sensor has been read from
 boolean sensorsRead = false;
 boolean painterCreated = false;
+
+int globalTimer = 0;
 
 void setup()
 {
@@ -45,7 +47,7 @@ void setup()
 void draw() 
 {
   
-  if (painter.painting == true) {
+ if (painter.painting == true) {
       painter.paint();
   } 
   
@@ -62,6 +64,7 @@ void draw()
   }
   
   if(painterCreated==false&&sensorsRead==true){ // if there isnt already a painter, create one
+    println("values are: temp="+arduino.val_temp+" light="+arduino.val_light+" moist="+arduino.val_moist);
     println("painter created with temp="+(int)map(arduino.val_temp, 0, 255, temp_low, temp_high)+" light="+(int)map(arduino.val_light, 0, 255, light_low, light_high)+" moist="+(int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
     painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
     painterCreated=true;
@@ -72,8 +75,14 @@ void draw()
     if(arduino.val_light>0&&arduino.val_temp>0&&arduino.val_moist>0){ // if the sensors have received values then we can begin to init the painter object
       sensorsRead=true;
     }
-  }
-  */
+  }*/
+  
+  // once this timer reaches 3000 (not based on actual seconds or milliseconds) it will post to twitter
+  // and then start drawing again
+  /*globalTimer++;
+  if(globalTimer%1000==0) println(globalTimer);
+  if(globalTimer%3000==0) tweet();*/
+  
 }
 
 void mousePressed() 
@@ -93,5 +102,7 @@ void tweet()
     twitterBot.updateStatus();
   
     // Restart painter
-    painter.restart();
+    painter = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high));
+    
+    //painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
 }
