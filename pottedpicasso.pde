@@ -10,9 +10,10 @@ import java.util.Date;
 import processing.serial.*;
 
 // Declare class objects
+int numPainters = 3;
+Painter[] painters = new Painter[numPainters];
 Arduino arduino;
 TwitterBot twitterBot;
-Painter painter;
 PFont font;
 
 // variables controlling the max and min values that get passed to the painter method for each sensor reading
@@ -23,6 +24,7 @@ int temp_low = 10;
 int temp_high = 250;
 int moist_low = 1;
 int moist_high = 50;
+
 
 // boolean variables to see if sensor has been read from
 boolean sensorsRead = false;
@@ -45,17 +47,21 @@ void setup()
   arduino = new Arduino();
   twitterBot = new TwitterBot();
   // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
-  painter = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
   
-
+  for(int i=0; i<numPainters; i++){
+    painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+  }
 }
 
 void draw() 
 {
   
- if (painter.painting == true) {
-      painter.paint();
-  } 
+  for(int i=0; i<numPainters; i++){
+    if (painters[i].painting == true) {
+      painters[i].paint();
+      i = numPainters; // enable to make them all draw at the same time
+    }
+  }
   
   // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
   // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
@@ -108,7 +114,9 @@ void tweet()
     twitterBot.updateStatus();
   
     // Restart painter
-    painter = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high));
+    for(int i=0; i<numPainters; i++){
+      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+    }
     
     //painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
 }

@@ -106,7 +106,7 @@ class Painter
     PImage b = loadImage(fn);
     image(b, 0, 0);
     
-    for (int i = palXPos; i <= palXPos+100 && i <= light_high; i++) 
+    for (int i = palXPos; i < palXPos+100 && i < light_high; i++) 
     {
         color c = get(i, 0);
         boolean exists = false;
