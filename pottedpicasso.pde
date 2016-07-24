@@ -13,7 +13,7 @@ import gifAnimation.*;
 import processing.opengl.*;
 
 GifMaker gifExport;
-PImage logo;
+PImage pic;
 
 // Declare class objects
 int numPainters = 3;
@@ -57,6 +57,7 @@ void setup()
   for(int i=0; i<numPainters; i++){
     painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
   }
+  pic = loadImage(dataPath("image.png"));
   gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
 
@@ -109,8 +110,8 @@ void draw()
 
 void mousePressed() 
 {
+  gifExport.finish();
   tweet();
-   gifExport.finish();
 }
 
 void tweet()

@@ -33,7 +33,7 @@ class TwitterBot {
   { 
     try 
     {
-      twitter.updateStatus(status);
+      //twitter.updateStatus(status);
       twitter.updateStatus(statuspaint);
     } 
     catch (TwitterException te) 
