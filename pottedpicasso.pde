@@ -16,7 +16,7 @@ GifMaker gifExport;
 PImage pic;
 
 // Declare class objects
-int numPainters = 3;
+int numPainters = 1;
 Painter[] painters = new Painter[numPainters];
 Arduino arduino;
 TwitterBot twitterBot;
@@ -42,8 +42,8 @@ int globalTimer = 0;
 void setup()
 {
   smooth();
-  frameRate(350);
-  size(500, 500);
+  frameRate(60);
+  size(300, 300);
   background(255);
   
   // temporary
@@ -63,16 +63,18 @@ void setup()
 
 void draw() 
 {
-  
-  for(int i=0; i<numPainters; i++){
-    if (painters[i].painting == true) {
-      painters[i].paint();
-      i = numPainters; // enable to make them all draw at the same time
+  for(int f=0; f<80; f++){
+    for(int i=0; i<numPainters; i++){
+      if (painters[i].painting == true) {
+          painters[i].paint();
+          i = numPainters; // enable to make them all draw at the same time
+          if (f == 0) {
+              gifExport.setDelay(1);
+              gifExport.addFrame();
+          }
+        }
+      } 
     }
-  }
-  
-  gifExport.setDelay(1);
-  gifExport.addFrame();
   
   // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
   // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
@@ -110,25 +112,31 @@ void draw()
 
 void mousePressed() 
 {
+  println("saving images...");
   gifExport.finish();
   tweet();
 }
 
 void tweet()
-{
+{ 
     // Capture frame
     saveFrame(dataPath("image.png"));
 
     // Prepare status
+    println("preparing status...");
     twitterBot.prepareStatus();
+    
   
     // Update status
+    println("updating status...");
     twitterBot.updateStatus();
   
     // Restart painter
+    println("restarting painter...");
     for(int i=0; i<numPainters; i++){
       painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
     }
+    
     
     //painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
 }
