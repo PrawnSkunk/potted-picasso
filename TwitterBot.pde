@@ -3,6 +3,7 @@ class TwitterBot {
   // Instance variables
   Twitter twitter;
   StatusUpdate status;
+  StatusUpdate statuspaint;
 
   // TwitterBot constructor
   TwitterBot() 
@@ -22,6 +23,9 @@ class TwitterBot {
   {
     status = new StatusUpdate("Test");
     status.setMedia(new File(dataPath("image.png")));
+    statuspaint = new StatusUpdate("TestGIF");
+    statuspaint.setMedia(new File(dataPath("gif.gif")));
+
   }
 
   // Update status
@@ -29,7 +33,8 @@ class TwitterBot {
   { 
     try 
     {
-      twitter.updateStatus(status);
+      //twitter.updateStatus(status);
+      twitter.updateStatus(statuspaint);
     } 
     catch (TwitterException te) 
     {

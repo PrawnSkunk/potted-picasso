@@ -9,6 +9,12 @@ import twitter4j.util.function.*;
 import java.util.Date;
 import processing.serial.*;
 
+import gifAnimation.*;
+import processing.opengl.*;
+
+GifMaker gifExport;
+PImage logo;
+
 // Declare class objects
 int numPainters = 3;
 Painter[] painters = new Painter[numPainters];
@@ -36,7 +42,7 @@ int globalTimer = 0;
 void setup()
 {
   smooth();
-  frameRate(440);
+  frameRate(350);
   size(500, 500);
   background(255);
   
@@ -51,6 +57,7 @@ void setup()
   for(int i=0; i<numPainters; i++){
     painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
   }
+  gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
 
 void draw() 
@@ -62,6 +69,9 @@ void draw()
       i = numPainters; // enable to make them all draw at the same time
     }
   }
+  
+  gifExport.setDelay(1);
+  gifExport.addFrame();
   
   // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
   // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
@@ -100,13 +110,14 @@ void draw()
 void mousePressed() 
 {
   tweet();
+   gifExport.finish();
 }
 
 void tweet()
 {
     // Capture frame
     saveFrame(dataPath("image.png"));
-  
+
     // Prepare status
     twitterBot.prepareStatus();
   
