@@ -1,3 +1,5 @@
+
+
 import twitter4j.*;
 import twitter4j.api.*;
 import twitter4j.auth.*;
@@ -8,6 +10,7 @@ import twitter4j.util.*;
 import twitter4j.util.function.*;
 import java.util.Date;
 import processing.serial.*;
+import java.util.List;
 
 import gifAnimation.*;
 import processing.opengl.*;
@@ -115,6 +118,12 @@ void mousePressed()
   println("saving images...");
   gifExport.finish();
   tweet();
+}
+void keyPressed(){
+  if(key=='a'){
+    println("searching...");
+    twitterBot.searchTweets("@pottedpicasso Draw me a");
+  }
 }
 
 void tweet()

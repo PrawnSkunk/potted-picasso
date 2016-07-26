@@ -41,4 +41,20 @@ class TwitterBot {
       println("Error: " + te);
     }
   }
+  String splitString(String baseString){
+    String[] split = split(baseString, " Draw me a ");
+    return split[1];
+  }
+  void searchTweets(String searchString) {
+      try{
+        Query query = new Query(searchString);
+        QueryResult result = twitter.search(query);
+        for (Status status : result.getTweets()) {
+            String returnedString = "@" + status.getUser().getScreenName() + ":" + status.getText();
+            println(status.getUser().getScreenName()+" wants to draw a "+splitString(returnedString));
+        }
+      } catch (TwitterException te) {
+        println("Error: " + te);
+      }
+    }
 }
