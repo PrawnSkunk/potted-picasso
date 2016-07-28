@@ -3,9 +3,11 @@ class TwitterBot {
   // Instance variables
   Twitter twitter;
   StatusUpdate status;
-  StatusUpdate statuspaint;
-
+  StatusUpdate statuspaint; 
   // TwitterBot constructor
+  
+  ArrayList<String> tweetarray = new ArrayList<String>();
+  
   TwitterBot() 
   {
     // Instantiate twitter object
@@ -25,6 +27,16 @@ class TwitterBot {
     status.setMedia(new File(dataPath("image.png")));
     statuspaint = new StatusUpdate("TestGIF");
     statuspaint.setMedia(new File(dataPath("gif.gif")));
+
+  }
+  
+  void prepareStatus2() 
+  {
+    status = new StatusUpdate("Test");
+    status.setMedia(new File(dataPath("image.png")));
+    statuspaint = new StatusUpdate("Here's the " + tweetarray.get(0)); // this will say the actual thing being drawn
+    statuspaint.setMedia(new File(dataPath("gif.gif")));
+    tweetarray.remove(0); //remove the last request off the stack, so it goes in order
 
   }
 
@@ -51,6 +63,7 @@ class TwitterBot {
         QueryResult result = twitter.search(query);
         for (Status status : result.getTweets()) {
             String returnedString = "@" + status.getUser().getScreenName() + ":" + status.getText();
+            tweetarray.add(splitString(returnedString));
             println(status.getUser().getScreenName()+" wants to draw a "+splitString(returnedString));
         }
       } catch (TwitterException te) {

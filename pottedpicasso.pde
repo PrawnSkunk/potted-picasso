@@ -123,7 +123,29 @@ void keyPressed(){
   if(key=='a'){
     println("searching...");
     twitterBot.searchTweets("@pottedpicasso Draw me a");
+    gifExport.finish();
+    tweet2();
   }
+}
+
+void tweet2() // this one is for tweeting the request responses
+{ 
+    // Capture frame
+    saveFrame(dataPath("image.png"));
+
+    // Prepare status
+    println("preparing alternate status...");
+    twitterBot.prepareStatus2();
+    
+    // Update status
+    println("updating status...");
+    twitterBot.updateStatus();
+  
+    // Restart painter
+    println("restarting painter...");
+    for(int i=0; i<numPainters; i++){
+      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+    }
 }
 
 void tweet()
@@ -135,7 +157,6 @@ void tweet()
     println("preparing status...");
     twitterBot.prepareStatus();
     
-  
     // Update status
     println("updating status...");
     twitterBot.updateStatus();
