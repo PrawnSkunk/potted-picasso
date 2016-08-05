@@ -1,5 +1,8 @@
-
-
+import gifAnimation.*;
+import java.util.Date;
+import java.util.List;
+import processing.opengl.*;
+import processing.serial.*;
 import twitter4j.*;
 import twitter4j.api.*;
 import twitter4j.auth.*;
@@ -8,37 +11,29 @@ import twitter4j.json.*;
 import twitter4j.management.*;
 import twitter4j.util.*;
 import twitter4j.util.function.*;
-import java.util.Date;
-import processing.serial.*;
-import java.util.List;
 
-import gifAnimation.*;
-import processing.opengl.*;
-
-GifMaker gifExport;
-PImage pic;
-
-// Declare class objects
-int numPainters = 1;
+// Declare global variables
+int numPainters = 2;
+int[] palXPos = new int[numPainters];
 Painter[] painters = new Painter[numPainters];
 Arduino arduino;
 TwitterBot twitterBot;
+GifMaker gifExport;
+PImage pic;
 PFont font;
 
-// variables controlling the max and min values that get passed to the painter method for each sensor reading
-// TEMPORARILY MAKING THEM GLOBAL, THEY WONT BE IN THE FUTURE, THIS IS STILL FOR TESTING
+// Variables controlling the max and min values that get passed to the painter method for each sensor reading
+// TEMPORARILY MAKING THEM GLOBAL, THEY WONT BE IN THE FUTURE, THIS IS FOR TESTING
 int light_low = 0;
-int light_high = 500;
+int light_high = 255; // MUST BE SCREEN WIDTH-1
 int temp_low = 10;
 int temp_high = 250;
 int moist_low = 1;
 int moist_high = 50;
 
-
 // boolean variables to see if sensor has been read from
 boolean sensorsRead = false;
 boolean painterCreated = false;
-int palXPos;
 
 int globalTimer = 0;
 
@@ -46,19 +41,23 @@ void setup()
 {
   smooth();
   frameRate(60);
-  size(300, 300);
+  size(256, 256); // if you change size, update light_high variable
   background(255);
-  
-  // temporary
-  palXPos = (int)random(light_low,light_high);
-  
+
   // Initialize class objects
   arduino = new Arduino();
   twitterBot = new TwitterBot();
-  // initializing the painter with set values from arduino because you guys do not have the arduino set up - Matt
   
+  // Initialize the painter with random values if arduino isn't connecting
   for(int i=0; i<numPainters; i++){
-    painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+    int maxTotal = (int)random(temp_low,temp_high);
+    int light_val = (int)random(light_low,light_high);
+    int maxInit = (int)random(moist_low,moist_high);
+    palXPos[i] = (int)random(light_low,light_high);
+    if(palXPos[i] > width) { 
+      println("It's drawing black, because you haven't updated int light_high for the new screen width!");
+    }
+    painters[i] = new Painter(maxTotal, light_val, maxInit, palXPos[i]); 
   }
   pic = loadImage(dataPath("image.png"));
   gifExport = new GifMaker(this, dataPath("gif.gif"));
@@ -118,6 +117,7 @@ void mousePressed()
   println("saving images...");
   gifExport.finish();
   tweet();
+  gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
 void keyPressed(){
   if(key=='a'){
@@ -126,6 +126,7 @@ void keyPressed(){
     gifExport.finish();
     tweet2();
   }
+  gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
 
 void tweet2() // this one is for tweeting the request responses
@@ -144,7 +145,11 @@ void tweet2() // this one is for tweeting the request responses
     // Restart painter
     println("restarting painter...");
     for(int i=0; i<numPainters; i++){
-      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+      palXPos[i] = (int)random(light_low,light_high);
+      if(palXPos[i] > width) { 
+        println("It's drawing black, because you haven't updated int light_high for the new screen width!");
+      }
+      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high), palXPos[i]); 
     }
 }
 
@@ -164,7 +169,11 @@ void tweet()
     // Restart painter
     println("restarting painter...");
     for(int i=0; i<numPainters; i++){
-      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high)); 
+       palXPos[i] = (int)random(light_low,light_high);
+      if(palXPos[i] > width) { 
+        println("It's drawing black, because you haven't updated int light_high for the new screen width!");
+      }
+      painters[i] = new Painter((int)random(temp_low,temp_high), (int)random(light_low,light_high), (int)random(moist_low,moist_high), palXPos[i]); 
     }
     
     

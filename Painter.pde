@@ -4,14 +4,15 @@ class Painter
   public final int WIN_WIDTH = width;    // Window width
   public final int WIN_HEIGHT = height;  // Window height
   
-  public int MAX_TOTAL = 160;            // Maximum number of total cracks
-  public final int MAX_CRACKS = 8;      // Maximum number of live cracks
-  public int MAX_PAL = 100;              // Maximum number of colors
-  public int MAX_INITIAL = 6;            // Maximum number of initial crack spawns
+  public int MAX_TOTAL = 20;            // Maximum number of total cracks
+  public final int MAX_CRACKS = 2;      // Maximum number of live cracks
+  public int MAX_PAL = 300;              // Maximum number of colors
+  public int MAX_INITIAL = 1;            // Maximum number of initial crack spawns
         
   public float strokeWidth = 11.5;         // Stroke height
   public int strokeWeight = 7;           // Stroke weight
   public int strokeOpacity = 225;        // Stroke opacity
+  public int palXPos = 0;
   
   // Instance variables
   public SandPainter[] sands; // Contains sand strokes
@@ -26,10 +27,11 @@ class Painter
   
       
   // Constructor
-  Painter(int maxTotal, int light_val, int maxInit) 
+  Painter(int maxTotal, int light_val, int maxInit, int palXPos) 
   {
 
     // Initialize instance variables
+    this.palXPos = palXPos;
     //MAX_PAL=maxPal;
     this.goodcolor = new color[MAX_PAL];
     //MAX_TOTAL = maxTotal;
@@ -105,8 +107,7 @@ class Painter
   {
     PImage b = loadImage(fn);
     image(b, 0, 0);
-    
-    for (int i = palXPos; i < palXPos+100 && i < light_high; i++) 
+    for (int i = palXPos; i < palXPos+100 && i >= 0 && i < light_high; i++) 
     {
         color c = get(i, 0);
         boolean exists = false;
@@ -119,10 +120,10 @@ class Painter
             break;
           }
         }
-        if (!exists && numPal<MAX_PAL) {
-          // add color to palette
-          goodcolor[numPal] = c;
-          numPal++;
+        if (!exists && numPal<MAX_PAL && c!=0) {
+            // add color to palette
+            goodcolor[numPal] = c;
+            numPal++;
       }
     }
   }
@@ -183,11 +184,13 @@ class Painter
 
     void move() {
       // continue cracking
-      x+=0.42*cos(t*PI/180);
-      y+=0.42*sin(t*PI/180); 
+      t-=random(0,1) > 0.5 ? -1 : 1;
+      float tra = 0.42;
+      x+=tra*cos(t*PI/180);
+      y+=tra*sin(t*PI/180); 
 
       // bound check
-      float z = 0.33;
+      float z = 0; // 0.33
       int cx = int(x+random(-z, z));  // add fuzz
       int cy = int(y+random(-z, z));
 
@@ -195,9 +198,9 @@ class Painter
       regionColor();
 
       // draw black crack
-      strokeWeight(5);
-      stroke(0,0);
-      point(x+random(-z, z), y+random(-z, z));
+      strokeWeight(3);
+      stroke(255,255);
+      //point(x+random(-z, z), y+random(-z, z));
 
 
       if ((cx>=0) && (cx<WIN_WIDTH) && (cy>=0) && (cy<WIN_HEIGHT)) {
@@ -253,7 +256,8 @@ class Painter
     }
   }
 
-  class SandPainter {
+  class SandPainter 
+  {
 
     color c;
     float g;
@@ -263,9 +267,8 @@ class Painter
       c = somecolor();
       g = random(0.01, 0.1);
     }
-    void render(float x, float y, float ox, float oy) {
-      
-   
+    void render(float x, float y, float ox, float oy) 
+    {
       // modulate gain
       g+=random(strokeWidth);
       float maxg = 1.0;
