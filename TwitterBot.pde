@@ -6,7 +6,10 @@ class TwitterBot {
   StatusUpdate statuspaint; 
   // TwitterBot constructor
   
-  ArrayList<String> tweetarray = new ArrayList<String>();
+  ArrayList<String> tweetRequests = new ArrayList<String>();
+  ArrayList<String> tweetsDrawn = new ArrayList<String>();
+  ArrayList<String> tweetRequestsUsername = new ArrayList<String>();
+  ArrayList<String> tweetsDrawnUsername = new ArrayList<String>();
   
   TwitterBot() 
   {
@@ -25,18 +28,35 @@ class TwitterBot {
   {
     status = new StatusUpdate("Test");
     status.setMedia(new File(dataPath("image.png")));
-    statuspaint = new StatusUpdate("TestGIF");
+    statuspaint = new StatusUpdate("Here is something I drew");
     statuspaint.setMedia(new File(dataPath("gif.gif")));
 
   }
   
-  void prepareStatus2() 
-  {
-    status = new StatusUpdate("Test");
+  void updateStatus2(String stat){
+    
+    status = new StatusUpdate(stat);
     status.setMedia(new File(dataPath("image.png")));
-    statuspaint = new StatusUpdate("Here's the " + tweetarray.get(0)); // this will say the actual thing being drawn
+    statuspaint = new StatusUpdate(stat);
     statuspaint.setMedia(new File(dataPath("gif.gif")));
-    tweetarray.remove(0); //remove the last request off the stack, so it goes in order
+    
+    try{
+    twitter.updateStatus(statuspaint);
+    }
+    catch (TwitterException te) 
+    {
+      println("updateStatus 2 Error: " + te.getErrorMessage()+" "+te.getRateLimitStatus());
+    }
+  } 
+  
+  void prepareStatus2(String statusForPost) 
+  {
+    status = new StatusUpdate(statusForPost);
+    status.setMedia(new File(dataPath("image.png")));
+    statuspaint = new StatusUpdate(statusForPost); // this will say the actual thing being drawn
+    statuspaint.setMedia(new File(dataPath("gif.gif")));
+    //tweetRequests.remove(0); //remove the last request off the stack, so it goes in order
+    //tweetRequestsUsername.remove(0);
 
   }
 
@@ -48,26 +68,43 @@ class TwitterBot {
       //twitter.updateStatus(status);
       twitter.updateStatus(statuspaint);
     } 
-    catch (TwitterException te) 
-    {
-      println("Error: " + te);
+    catch (TwitterException te) {
+      println("updateStatus Error: " + te.getErrorMessage()+" "+te.getRateLimitStatus());
     }
   }
-  String splitString(String baseString){
-    String[] split = split(baseString, " Draw me a ");
-    return split[1];
+  String splitString(String baseString, String splitter, int returnInt){
+    String[] split = split(baseString, splitter);
+    return split[returnInt];
   }
+  
   void searchTweets(String searchString) {
       try{
         Query query = new Query(searchString);
         QueryResult result = twitter.search(query);
         for (Status status : result.getTweets()) {
             String returnedString = "@" + status.getUser().getScreenName() + ":" + status.getText();
-            tweetarray.add(splitString(returnedString));
-            println(status.getUser().getScreenName()+" wants to draw a "+splitString(returnedString));
+            tweetRequests.add(splitString(returnedString," Draw me a ",1));
+            tweetRequestsUsername.add(status.getUser().getScreenName());
         }
       } catch (TwitterException te) {
-        println("Error: " + te);
+        println("SearchTweets Error: " + te.getErrorMessage()+" "+te.getRateLimitStatus());
       }
     }
+  void searchMyTweets(String searchString) {
+    try{
+      Query query = new Query(searchString);
+      QueryResult result = twitter.search(query);
+      List<Status> statuses = twitter.getHomeTimeline();
+      for (Status status : statuses){//result.getTweets()) {
+          String returnedString = splitString(status.getText()," https://t.co",0);
+          if(returnedString.equals(searchString)){
+            tweetsDrawn.add(splitString(returnedString," Here's the ",1));
+            String userName = splitString(returnedString," Here's the ",0);
+            tweetsDrawnUsername.add(userName.substring(1));
+          }
+      }
+    } catch (TwitterException te) {
+      println("SearchMyTweets Error: " + te.getErrorMessage()+" "+te.getRateLimitStatus());
+    }
+  }
 }

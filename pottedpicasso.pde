@@ -37,6 +37,8 @@ boolean painterCreated = false;
 
 int globalTimer = 0;
 
+ArrayList<String> drawingsToPost = new ArrayList<String>();
+
 void setup()
 {
   smooth();
@@ -49,7 +51,7 @@ void setup()
   twitterBot = new TwitterBot();
   
   // Initialize the painter with random values if arduino isn't connecting
-  for(int i=0; i<numPainters; i++){
+  /*for(int i=0; i<numPainters; i++){
     int maxTotal = (int)random(temp_low,temp_high);
     int light_val = (int)random(light_low,light_high);
     int maxInit = (int)random(moist_low,moist_high);
@@ -58,42 +60,53 @@ void setup()
       println("It's drawing black, because you haven't updated int light_high for the new screen width!");
     }
     painters[i] = new Painter(maxTotal, light_val, maxInit, palXPos[i]); 
-  }
+  }*/
   pic = loadImage(dataPath("image.png"));
   gifExport = new GifMaker(this, dataPath("gif.gif"));
+  
 }
 
 void draw() 
 {
-  for(int f=0; f<80; f++){
-    for(int i=0; i<numPainters; i++){
-      if (painters[i].painting == true) {
-          painters[i].paint();
-          i = numPainters; // enable to make them all draw at the same time
-          if (f == 0) {
-              gifExport.setDelay(1);
-              gifExport.addFrame();
+  globalTimer++;
+  if(painterCreated==true){
+    for(int f=0; f<80; f++){
+      for(int i=0; i<numPainters; i++){
+        if (painters[i].painting == true) {
+            painters[i].paint();
+            i = numPainters; // enable to make them all draw at the same time
+            if (f == 0) {
+                gifExport.setDelay(1);
+                gifExport.addFrame();
+            }
           }
-        }
-      } 
-    }
+        } 
+      }
+  }
   
   // THIS SECTION WILL INITIALIZE THE PAINTER IF THE ARDUINO IS ACTUALLY SENDING VALUES //
   // LEAVE COMMENTED BUT DO NOT DELETE // - Matt
   
-  /*
+  
   
   // if the painter has been created then paint away
-  if(painterCreated==true){
+  /*if(painterCreated==true){
     if (painter.painting == true) {
       painter.paint();
     } 
-  }
+  }*/
   
   if(painterCreated==false&&sensorsRead==true){ // if there isnt already a painter, create one
-    println("values are: temp="+arduino.val_temp+" light="+arduino.val_light+" moist="+arduino.val_moist);
-    println("painter created with temp="+(int)map(arduino.val_temp, 0, 255, temp_low, temp_high)+" light="+(int)map(arduino.val_light, 0, 255, light_low, light_high)+" moist="+(int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
-    painter = new Painter((int)map(arduino.val_temp, 0, 255, temp_low, temp_high), (int)map(arduino.val_light, 0, 255, light_low, light_high), (int)map(arduino.val_moist, 0, 255, moist_low,moist_high));
+    for(int i=0; i<numPainters; i++){
+      int maxTotal = (int)random(temp_low,temp_high);
+      int light_val = (int)random(light_low,light_high);
+      int maxInit = (int)random(moist_low,moist_high);
+      palXPos[i] = (int)random(light_low,light_high);
+      if(palXPos[i] > width) { 
+        println("It's drawing black, because you haven't updated int light_high for the new screen width!");
+      }
+      painters[i] = new Painter(maxTotal, light_val, maxInit, palXPos[i]); 
+    }
     painterCreated=true;
   }
   
@@ -104,12 +117,46 @@ void draw()
     }
   }
   
-  // once this timer reaches 3000 (not based on actual seconds or milliseconds) it will post to twitter
+  // once this timer reaches 15000 (not based on actual seconds or milliseconds) it will post to twitter
   // and then start drawing again
-  /*globalTimer++;
   if(globalTimer%1000==0) println(globalTimer);
-  if(globalTimer%3000==0) tweet();*/
+  if(globalTimer%100000==0){
+      controlPosting();
+  }
   
+}
+void clearArray(ArrayList a){
+  println("a.size="+a.size());
+  for(int i = 0; i<a.size(); i++){
+    println("a.get("+i+")="+a.get(i));
+    a.remove(i);
+  }
+  printArray(a);
+}
+void controlPosting(){
+    if(drawingsToPost.size()==0){
+      println("grabbing new requests...");
+      println("");
+      /*clearArray(twitterBot.tweetRequests);
+      clearArray(twitterBot.tweetRequestsUsername);
+      clearArray(twitterBot.tweetsDrawn);
+      clearArray(twitterBot.tweetsDrawnUsername);*/
+      println("");
+      drawingsToPost = checkForRequests();
+    }
+    printArray(drawingsToPost);
+    if(drawingsToPost.size()>0){
+      gifExport.finish();
+      println("tweeting... "+drawingsToPost.get(0));
+      tweet2(drawingsToPost.get(0));
+      drawingsToPost.remove(0);
+    }
+    else{
+        println("tweeting default tweet...");
+        gifExport.finish();
+        tweet2("Here is something I drew");
+    }
+    gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
 
 void mousePressed() 
@@ -119,28 +166,78 @@ void mousePressed()
   tweet();
   gifExport = new GifMaker(this, dataPath("gif.gif"));
 }
+ArrayList<String> checkForRequests(){
+  
+  ArrayList<String> tweetsToPost = new ArrayList<String>();
+  int numNotEqual = 0;
+  println("searching...");
+    
+    twitterBot.tweetRequests = new ArrayList<String>();
+    twitterBot.tweetRequestsUsername = new ArrayList<String>();
+    twitterBot.tweetsDrawn = new ArrayList<String>();
+    twitterBot.tweetsDrawnUsername = new ArrayList<String>();
+    twitterBot.searchTweets("@pottedpicasso Draw me a");
+    
+    for(int i = 0; i<twitterBot.tweetRequests.size(); i++){
+      //println("here");
+      twitterBot.searchMyTweets("@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
+    }
+    
+    for(int i = 0; i<twitterBot.tweetRequests.size(); i++){
+      
+      //println("");
+      println("SEARCHING FOR: "+"@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
+      //twitterBot.searchMyTweets("@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
+      numNotEqual=0;
+      
+      for(int j = 0; j<twitterBot.tweetsDrawn.size(); j++){
+        
+        //println("i="+i+" j="+j+" nE="+numNotEqual+" tDsize="+twitterBot.tweetsDrawn.size()+" tRsize="+twitterBot.tweetRequests.size());
+        //println("ARE THESE EQUAL?  "+twitterBot.tweetRequestsUsername.get(i)+" "+twitterBot.tweetRequests.get(i)+"  &  "+
+        //twitterBot.tweetsDrawnUsername.get(j)+" "+twitterBot.tweetsDrawn.get(j));
+        
+        if(twitterBot.tweetRequests.get(i).equals(twitterBot.tweetsDrawn.get(j))&&
+           twitterBot.tweetRequestsUsername.get(i).equals(twitterBot.tweetsDrawnUsername.get(j))){
+          //println("EQUAL");
+          break;
+        }
+        else{
+          numNotEqual++;
+          //println("NOT EQUAL ="+numNotEqual);
+          if(numNotEqual==twitterBot.tweetsDrawn.size()){
+            //println("ADDED: "+"@"+twitterBot.tweetRequestsUsername.get(i)+" Here's the "+twitterBot.tweetRequests.get(i));
+            tweetsToPost.add("@"+twitterBot.tweetRequestsUsername.get(i)+" Here's the "+twitterBot.tweetRequests.get(i));
+          }
+        }
+      }
+    }
+    //printArray(twitterBot.tweetRequests+" "+twitterBot.tweetRequestsUsername);
+    //printArray(twitterBot.tweetsDrawn+" "+twitterBot.tweetsDrawnUsername);
+    return tweetsToPost;
+}
 void keyPressed(){
   if(key=='a'){
-    println("searching...");
-    twitterBot.searchTweets("@pottedpicasso Draw me a");
-    gifExport.finish();
-    tweet2();
+    // for testing only
+    controlPosting();
   }
-  gifExport = new GifMaker(this, dataPath("gif.gif"));
+  if(key=='b'){
+    gifExport.finish();
+    tweet();
+  }
 }
 
-void tweet2() // this one is for tweeting the request responses
+void tweet2(String status) // this one is for tweeting the request responses
 { 
     // Capture frame
     saveFrame(dataPath("image.png"));
 
     // Prepare status
-    println("preparing alternate status...");
-    twitterBot.prepareStatus2();
+    //println("preparing alternate status...");
+    //twitterBot.prepareStatus2(status);
     
     // Update status
     println("updating status...");
-    twitterBot.updateStatus();
+    twitterBot.updateStatus2(status);
   
     // Restart painter
     println("restarting painter...");
