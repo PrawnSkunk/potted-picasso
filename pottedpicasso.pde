@@ -120,7 +120,12 @@ void draw()
   // once this timer reaches 15000 (not based on actual seconds or milliseconds) it will post to twitter
   // and then start drawing again
   if(globalTimer%1000==0) println(globalTimer);
-  if(globalTimer%100000==0){
+  if(globalTimer%50000==0){
+    println("");
+    println("");
+    println("NEW WAVE");
+    println("");
+    println("");
       controlPosting();
   }
   
@@ -186,9 +191,14 @@ ArrayList<String> checkForRequests(){
     for(int i = 0; i<twitterBot.tweetRequests.size(); i++){
       
       //println("");
-      println("SEARCHING FOR: "+"@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
+      //println("SEARCHING FOR: "+"@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
       //twitterBot.searchMyTweets("@"+twitterBot.tweetRequestsUsername.get(i) + " Here's the " + twitterBot.tweetRequests.get(i));
       numNotEqual=0;
+      
+      if(twitterBot.tweetsDrawn.size()==0){
+        //println("ADDED: "+"@"+twitterBot.tweetRequestsUsername.get(i)+" Here's the "+twitterBot.tweetRequests.get(i));
+        tweetsToPost.add("@"+twitterBot.tweetRequestsUsername.get(i)+" Here's the "+twitterBot.tweetRequests.get(i));
+      }
       
       for(int j = 0; j<twitterBot.tweetsDrawn.size(); j++){
         
